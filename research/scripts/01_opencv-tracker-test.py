@@ -1,8 +1,26 @@
+"""Test script for tracking single object
+
+This script is not inteded to be rigorous in software good practices
+The script is used to learn about the OpenCV lib and in particular about the its Tracker API
+
+Source:  https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/
+
+Usage:
+
+    Open a terminal, go to the source file dir and type:
+        python 01_opencv-tracker-test.py
+
+    Select the region of interest to be tracked and press enter
+    The video is displayed while the object is tracked
+
+    To change the tracker, edit this line in the script
+        
+        tracker_type = tracker_types[7]
+"""
+
 import cv2
 import sys
 import json
-
-#(major_ver, minor_ver, subminor_ver) = (cv2.__version__).split('.')￼
 
 if __name__ == '__main__' :
 
@@ -49,11 +67,17 @@ if __name__ == '__main__' :
     # Uncomment the line below to select a different bounding box
     bbox = cv2.selectROI(frame, False)
 
-    json_file = "../../data/initial_conditions.json"
-    with open(json_file) as f:
-        initial_conditions = json.load(f)
+    #########################################
+    ## Initial conditions of the challenge
+    ########################################
+    
+    #json_file = "../../data/initial_conditions.json"
+    #with open(json_file) as f:
+    #    initial_conditions = json.load(f)
 
-    bbox = tuple(initial_conditions[2]["coordinates"])
+    #bbox = tuple(initial_conditions[2]["coordinates"])
+
+    ##############################################################
 
     # Initialize tracker with first frame and bounding box
     ok = tracker.init(frame, bbox)

@@ -1,4 +1,19 @@
-from __future__ import print_function
+"""Test script for multitracking
+
+This script is not inteded to be rigorous in software good practices
+The script is used to learn about the OpenCV lib and in particular about the its Tracker API
+
+Source:  https://www.learnopencv.com/multitracker-multiple-object-tracking-using-opencv-c-python/
+
+Usage:
+
+    Open a terminal go to the source file dir and type:
+        python 02_opencv-multi-tracker-test.py
+
+    Select a Tracker from the list  
+    The video is displayed while the objects are tracked. The rendered video is generated in the same folder (out.mkv)
+"""
+
 import sys
 import cv2
 from random import randint
@@ -48,6 +63,19 @@ videoPath = "videos/run.mp4"
 
 # Create a video capture object to read videos
 cap = cv2.VideoCapture("../../data/input.mkv")
+
+# Define the codec and create VideoWriter object
+w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+fps = cap.get(cv2.CAP_PROP_FPS)
+print(w)
+print(h)
+print(fps)
+out = cv2.VideoWriter(  'out.avi',
+                        cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 
+                        int(fps), 
+                        (int(w),  int(h))
+                   )
 
 # Read first frame
 success, frame = cap.read()
@@ -100,7 +128,16 @@ while cap.isOpened():
     # show frame
     cv2.imshow('MultiTracker', frame)
   
+    # Save video
+    out.write(frame)
 
     # quit on ESC button
     if cv2.waitKey(1) & 0xFF == 27:  # Esc pressed
         break
+
+
+
+    
+# Release the capture
+cap.release()
+out.release()
