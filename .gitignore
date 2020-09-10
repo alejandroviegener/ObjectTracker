@@ -3,3 +3,4 @@
 .vscode
 *.prototxt
 *.caffemodel
+__pycache__
