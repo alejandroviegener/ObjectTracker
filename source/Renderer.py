@@ -172,6 +172,6 @@ if __name__ == "__main__":
     
     # Render video
     renderer = BoundingBoxRenderer()
-    renderer.set_box_format((255, 255, 255), 2)
+    renderer.set_box_format((0, 255, 0), 2)
     renderer.set_text_format((255, 255, 255), 2, 0.8)
     renderer.render(video_file, object_trackings, out_path=".", file_name="blaout")
