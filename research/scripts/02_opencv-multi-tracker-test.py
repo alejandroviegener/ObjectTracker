@@ -71,8 +71,8 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 print(w)
 print(h)
 print(fps)
-out = cv2.VideoWriter(  'out.avi',
-                        cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 
+out = cv2.VideoWriter(  'out.mp4',
+                        cv2.VideoWriter_fourcc(*'DIVX'),  #cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 
                         int(fps), 
                         (int(w),  int(h))
                    )

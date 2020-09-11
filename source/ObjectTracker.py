@@ -22,6 +22,7 @@
 from TrackerType import TrackerType
 from  MultiTracker import MultiTracker
 import cv2 as cv
+import utils
 
 class ObjectTracker:
     """This class implements a video tracker for multiple objects"""
@@ -67,7 +68,7 @@ class ObjectTracker:
         """
 
         # Create a video capture object to read videos and verify it is open
-        first_frame, video_capture = self._get_video_capture(video_file)
+        first_frame, video_capture = utils.get_video_capture(video_file)
 
         # Initialize tracker with every object to track
         initial_bounding_boxes = [obj["coordinates"] for obj in objects_to_track]
@@ -80,21 +81,20 @@ class ObjectTracker:
             object_trackings.append(object_track)
 
         # Update tracking info for every frame in the video capture
+        frame = first_frame
         while video_capture.isOpened():
-
-            # Read frame from video, 
-            read_ok, frame = video_capture.read()
-            
-            # If end of video, then break
-            if not read_ok:
-                break
 
             # Track  objects in new frame and update history
             track_status_list, bounding_boxes = tracker.update(frame)
-            print(track_status_list)
             for track_status, bounding_box, object_track in zip(track_status_list, bounding_boxes, object_trackings):
                 track_item ={"track_status": track_status, "coordinates": bounding_box}
                 object_track["track"].append(track_item)
+
+            # Read new frame from video
+            # If end of video, then break
+            read_ok, frame = video_capture.read()
+            if not read_ok:
+                break
 
         # Release the capture
         video_capture.release()
@@ -139,39 +139,11 @@ class ObjectTracker:
 
         return tracker
 
-    @staticmethod
-    def _get_video_capture(video_file):
-        """Gets the video capture object and the first frame of it
-        
-        Args: 
-            video_file: the video file
-        
-        Returns:
-            (first_frame, video_capture)
 
-        Raises:
-            ValueError: if video file can not be opened
-            ValueError: if no frame can be read from the video
-
-        """  
-
-        video_capture = cv.VideoCapture(video_file)
-        if video_capture.isOpened() == False:
-            # log message
-            raise ValueError("Video file could not be opened")
-
-        # Read first frame
-        read_ok, first_frame = video_capture.read()
-        if not read_ok:
-            raise ValueError("Video file corrupted")
-
-        return (first_frame, video_capture)
-
-
-import utils
-
+#######################################################################
+####################### Usage Example #################################
+#######################################################################
 if __name__ == "__main__":
-    """Usage example"""
     
     video_file = "../data/input.mkv"
     objects_to_track_file = "../data/initial_conditions.json"

@@ -2,7 +2,7 @@
 """
 
 import json
-
+import cv2 as cv
 
 def read_objects_to_track_file(json_file):
     """Reads a json file and returns a list of dictionaries containing the objects to track info
@@ -32,8 +32,8 @@ def read_objects_to_track_file(json_file):
             "id": (int) id of the object to track
             "coordinates": (tuple) coordinates of the initial bounding box (x, y, width, height)
         }
-    
     """
+    
     objects_to_track = None
     with open(json_file) as f:
         objects_to_track = json.load(f)
@@ -44,3 +44,48 @@ def read_objects_to_track_file(json_file):
         obj["object"] = str(obj["object"])
     
     return objects_to_track
+
+
+def get_video_capture(video_file):
+    """Gets the video capture object and the first frame of it
+    
+    Args: 
+        video_file: the video file
+    
+    Returns:
+        (first_frame, video_capture)
+
+    Raises:
+        ValueError: if video file can not be opened
+        ValueError: if no frame can be read from the video
+    """  
+
+    video_capture = cv.VideoCapture(video_file)
+    if video_capture.isOpened() == False:
+        # log message
+        raise ValueError("Video file could not be opened")
+
+    # Read first frame
+    read_ok, first_frame = video_capture.read()
+    if not read_ok:
+        raise ValueError("Video file corrupted")
+
+    return (first_frame, video_capture)
+
+
+def get_video_fps(video_capture):
+    """Get video frame per seconds"""
+    return int(video_capture.get(cv.CAP_PROP_FPS))
+
+def get_video_frame_width(video_capture):
+    """Get video frame width"""
+    return int(video_capture.get(cv.CAP_PROP_FRAME_WIDTH))
+
+def get_video_frame_height(video_capture):
+    """Get video frame height"""
+    return int(video_capture.get(cv.CAP_PROP_FRAME_HEIGHT))
+
+def get_video_frame_count(video_capture):
+    """Get video frame count"""
+    return int(video_capture.get(cv.CAP_PROP_FRAME_COUNT))
+    
