@@ -57,18 +57,19 @@ def get_video_capture(video_file):
 
     Raises:
         ValueError: if video file can not be opened
-        ValueError: if no frame can be read from the video
+        ValueError: if video file has no frame
     """  
-
-    video_capture = cv.VideoCapture(video_file)
-    if video_capture.isOpened() == False:
-        # log message
+    
+    # Open capture
+    try:
+        video_capture = cv.VideoCapture(video_file)
+    except:
         raise ValueError("Video file could not be opened")
 
     # Read first frame
     read_ok, first_frame = video_capture.read()
     if not read_ok:
-        raise ValueError("Video file corrupted")
+        raise ValueError("Empty video file")
 
     return (first_frame, video_capture)
 

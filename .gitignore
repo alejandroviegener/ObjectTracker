@@ -4,4 +4,3 @@
 *.prototxt
 *.caffemodel
 __pycache__
-*.avi

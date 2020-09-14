@@ -67,7 +67,7 @@ class ObjectTracker:
             
         """
 
-        # Create a video capture object to read videos and verify it is open
+        # Create a video capture object to read videos 
         first_frame, video_capture = utils.get_video_capture(video_file)
 
         # Initialize tracker with every object to track
