@@ -18,7 +18,7 @@ optional arguments:
 
 Example: 
     python tracker.py ../data/input.mkv ../data/initial_conditions.json -a KCF -b 0 255 0 -t 255 255 255 -o output -v 1 
-    
+
 """
 
 from ObjectTracker import ObjectTracker
@@ -54,6 +54,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--text_color", type=int, nargs=3, help="Text color, BGR separated by space", default=[255, 255, 255])
     parser.add_argument("-b", "--box_color", type=int, nargs=3, help="Box color, BGR separated by space", default=[0, 255, 0])
     parser.add_argument("-o", "--out_file_name", type=str, default="out")
+    parser.add_argument("-p", "--out_path", type=str, default=".")
     parser.add_argument("-v", "--verbosity", type=int, choices=[0, 1, 2], help="Set output verbosity", default=0)
     args = parser.parse_args()
 
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     text_color = tuple(args.text_color)
     box_color = tuple(args.box_color)
     out_file_name = args.out_file_name
+    out_path = args.out_path
     verbosity = args.verbosity
 
     log("Reading initial conditions file...", verbosity)
@@ -81,5 +83,5 @@ if __name__ == "__main__":
     renderer = BoundingBoxRenderer()
     renderer.set_box_format(box_color, 2)
     renderer.set_text_format(text_color, 2, 0.8)
-    renderer.render(video_file, object_trackings, out_path=".", file_name=out_file_name)
+    renderer.render(video_file, object_trackings, out_path=out_path, file_name=out_file_name)
     log("done", verbosity)

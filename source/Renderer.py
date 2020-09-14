@@ -1,3 +1,17 @@
+"""Implements a Bounding Box Renderer that adds a bounding box on each frame of a video
+given the object tracking history
+
+Typical usage:
+
+    renderer = BoundingBoxRenderer()
+    renderer.set_box_format((0, 255, 0), 2)
+    renderer.set_text_format((255, 255, 255), 2, 0.8)
+    renderer.render(video_file, object_trackings, out_path=".", file_name="out")    
+
+    The object_trackings history can be obtained with the ObjectTracker class.
+
+"""
+
 
 import platform
 from enum import Enum
@@ -105,7 +119,7 @@ class BoundingBoxRenderer:
         
         # Create video writer
         video_writer = cv.VideoWriter(  out_path + "/" + file_name + "." + self.video_format.value,
-                                        cv.VideoWriter_fourcc(*'DIVX'), 
+                                        cv.VideoWriter_fourcc(*self.video_codec.value), 
                                         utils.get_video_fps(video_capture), 
                                         (utils.get_video_frame_width(video_capture), utils.get_video_frame_height(video_capture))
                                      )
@@ -123,14 +137,14 @@ class BoundingBoxRenderer:
                 track_status = obj["track"][i]["track_status"]
                 if track_status:
 
-                    # Add rectangle for object
+                    # Add rectangle over object
                     point1 = (coordinates[0], coordinates[1])
                     point2 = (coordinates[0] + coordinates[2], coordinates[1] + coordinates[3])
                     cv.rectangle(frame, point1, point2, self._box_color, self._box_line_width)
 
                     # Add text for object
-                    # Text is shown under the bbox unless it goes out of the frame
-                    # In that case it is shown over the bbox
+                    # Text is shown UNDER the bbox unless it goes out of the video frame
+                    # In that case it is shown OVER the bbox
                     text = obj["object"] + "_" + str(obj["id"])
                     x = coordinates[0]
                     y_under = coordinates[1] + coordinates[3] + 30
@@ -174,4 +188,4 @@ if __name__ == "__main__":
     renderer = BoundingBoxRenderer()
     renderer.set_box_format((0, 255, 0), 2)
     renderer.set_text_format((255, 255, 255), 2, 0.8)
-    renderer.render(video_file, object_trackings, out_path=".", file_name="blaout")
+    renderer.render(video_file, object_trackings, out_path=".", file_name="out")

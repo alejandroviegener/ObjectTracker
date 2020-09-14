@@ -33,7 +33,7 @@ def read_objects_to_track_file(json_file):
             "coordinates": (tuple) coordinates of the initial bounding box (x, y, width, height)
         }
     """
-    
+
     objects_to_track = None
     with open(json_file) as f:
         objects_to_track = json.load(f)
