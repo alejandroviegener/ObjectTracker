@@ -89,6 +89,10 @@ optional arguments:
 
 Typical usage:
 
+1) Copy the input video and initial conditions to the in_out directory
+
+2) Execute the tracker appication
+
 ```bash
 ./tracker.sh input.mkv initial_conditions.json -a MOSSE -b 0 255 0 -t 255 255 255 -o output -v 3 --log
 ```
