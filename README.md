@@ -7,11 +7,11 @@ Application for multi object tracking, given initial bounding boxes.
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Project Structure](#structure)
-5. [Application Design Basics](#design)
+4. [Application Design Basics](#design)
+5. [Project Directory Structure](#structure)
 
 
-## Requirements  <a name="requierements"></a>
+## Requirements  <a name="requirements"></a>
 
 This application requieres the following for its installation and usage:
 
@@ -107,7 +107,19 @@ Typical usage:
 
 **Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
 
-## Project Structure <a name="structure"></a>
-
 ## Application Design Basics <a name="design"></a>
 
+The following diagramm shows the basic design and flow of the application implementation:
+
+![Application Workflow](./img/app-diagramm.jpg)
+
+
+1) An **input video** and an **initial condition** file defining the initial bounding boxes is passed to the application as parameters. Optional parameters are the bounding box color, the description text color, output file name, verbosity level and output logging file
+2) The **Object Tracker** module tracks the objects specified in the initial bounding boxes trough the input video frames. The tracker outputs a list of dictionaries that contains the tracking information for every object. This information inclues: the object id, the track status, and the bounding box coordinates.
+3) The objects tracking list and the input video are passed as input parameters to the **Bounding Box Renderer** module. The renderer generates a new video by combining the input video and the result of the tracker. The renderer also accepts as paramaters the bounding box and information text formatting.
+4) The application outputs the rendered output video with the bounding boxes and information text, and also outputs the log messages to console/file if configured.
+
+
+## Project Directory Structure <a name="structure"></a>
+
+Project directory structure and file description
