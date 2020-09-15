@@ -4,3 +4,4 @@
 *.prototxt
 *.caffemodel
 __pycache__
+in_out

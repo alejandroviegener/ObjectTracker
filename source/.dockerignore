@@ -1,5 +1,8 @@
 .git
-__pychache__
+__pycache__
 Dockerfile
 .DS_Store
 .gitignore
+in_out
+install.sh
+tracker.sh
