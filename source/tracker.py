@@ -26,14 +26,14 @@ Example:
 
 """
 
-from ObjectTracker import ObjectTracker
-from TrackerType import TrackerType
-from Renderer import  BoundingBoxRenderer 
-import utils
+from tracker.object_tracker import ObjectTracker
+from tracker.types import TrackerType
+from tracker.renderer import  BoundingBoxRenderer 
+from tracker import root_logger
+from tracker import utils
 import argparse
 import sys
 import logging
-import root_logger
 
 # Utils functions
 def get_tracker_type(name):
@@ -49,7 +49,7 @@ def get_tracker_type(name):
 logger = logging.getLogger(root_logger.LOGGER_NAME + ".main_app")
 
 # Some globals
-in_out_path = "/mnt"
+in_out_path = "./in_out"
 log_file = in_out_path + "/out.log"
 
 # Main application 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="tracker", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("video", type=str, help="Input video file")
     parser.add_argument("initial_conditions", type=str, help="Initial conditions (json) file")
-    parser.add_argument("-a", "--algorithm", type=str, choices=["KCF", "MOSSE", "CSRT"], help="Tracking algorithm", default="KCF")
+    parser.add_argument("-a", "--algorithm", type=str, choices=["KCF", "MOSSE", "CSRT"], help="Tracking algorithm", default="CSRT")
     parser.add_argument("-t", "--text_color", type=int, nargs=3, help="Text color, BGR separated by space", default=[255, 255, 255])
     parser.add_argument("-b", "--box_color", type=int, nargs=3, help="Box color, BGR separated by space", default=[0, 255, 0])
     parser.add_argument("-o", "--out_file_name", type=str, default="out")

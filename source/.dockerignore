@@ -6,3 +6,14 @@ Dockerfile
 in_out
 install.sh
 tracker.sh
+.cache
+.pytest_cache
+tracker/__pycache__
+tracker/.DS_Store
+tracker/.pytest_cache
+tracker/.cache
+tracker/tests/__pycache__
+tracker/tests/.DS_Store
+tracker/tests/.pytest_cache
+tracker/tests/.cache
+tracker/tests/data/.DS_Store

@@ -7,8 +7,9 @@ Application for multi object tracking, given initial bounding boxes.
 1. [Requirements](#requirements)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Application Design Basics](#design)
-5. [Project Directory Structure](#structure)
+4. [Tests](#tests)
+5. [Application Design Basics](#design)
+6. [Project Directory Structure](#structure)
 
 
 ## Requirements  <a name="requirements"></a>
@@ -107,6 +108,14 @@ Typical usage:
 
 **Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
 
+## Tests <a name="tests"></a>
+
+To run the tests for the tracker package, execute the tracker scipt with the **--test** option:
+
+```bash
+./tracker.sh --test
+```
+
 ## Application Design Basics <a name="design"></a>
 
 The following diagramm shows the basic design and flow of the application implementation:
@@ -122,4 +131,38 @@ The following diagramm shows the basic design and flow of the application implem
 
 ## Project Directory Structure <a name="structure"></a>
 
-Project directory structure and file description
+Structure and description of the most important dirs and files in the project
+
+```bash
+ObjectTracker
+    │
+    ├── data: dir containing the developments assests of the challenge
+    │   ├── initial_conditions.json
+    │   └── input.mkv
+    ├── documents: dir containing project documentation
+    │   └── Challenge Computer Vision & Python Engineer - Deep Vision AI.pdf
+    ├── research: dir containing notebooks and scripts of the research stage of the project
+    │   ├── notebooks
+    │   │   └── 01_opencv-basics.ipynb
+    │   └── scripts
+    │       ├── 01_opencv-tracker-test.py
+    │       └── 02_opencv-multi-tracker-test.py
+    └── source: dir containing the application and packages source code
+        ├── Dockerfile: docker file for the application
+        ├── install.sh: script to install the the application
+        ├── requirements.txt: python requirements file
+        ├── test.sh: script to execute the module tests
+        ├── tracker: tracker package
+        │   ├── __init__.py
+        │   ├── conftest.py
+        │   ├── multi_tracker.py
+        │   ├── object_tracker.py
+        │   ├── renderer.py
+        │   ├── root_logger.py
+        │   ├── tests: dir containing the tests for this package
+        │   ├── types.py
+        │   └── utils.py
+        ├── tracker.py: python tracker application script
+        └── tracker.sh: script to launch application/tests
+
+```

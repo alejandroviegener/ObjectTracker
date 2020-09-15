@@ -5,3 +5,5 @@
 *.caffemodel
 __pycache__
 in_out
+.cache
+.pytest_cache

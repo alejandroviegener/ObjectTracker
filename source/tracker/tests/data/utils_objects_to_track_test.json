@@ -1,0 +1,23 @@
+[
+    {
+        "object": "player",
+        "id": 0,
+        "coordinates": [
+            630,
+            875,
+            146,
+            212
+        ]
+    },
+    
+    {
+        "object": "player",
+        "id": 1,
+        "coordinates": [
+            1650,
+            555,
+            152,
+            200
+        ]
+    }
+]
