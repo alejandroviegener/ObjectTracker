@@ -76,7 +76,11 @@ class ObjectTracker:
         """
 
         # Create a video capture object to read videos 
-        first_frame, video_capture = utils.get_video_capture(video_file)
+        try:
+            first_frame, video_capture = utils.get_video_capture(video_file)
+        except ValueError:
+            logger.error("invalid video file")
+            raise
 
         # Initialize tracker with every object to track
         initial_bounding_boxes = [obj["coordinates"] for obj in objects_to_track]
@@ -99,6 +103,10 @@ class ObjectTracker:
             for track_status, bounding_box, object_track in zip(track_status_list, bounding_boxes, object_trackings):
                 track_item ={"track_status": track_status, "coordinates": bounding_box}
                 object_track["track"].append(track_item)
+
+                # Log if object not tracked
+                if track_status == False:
+                    logger.warning(f"Tracking error for object {object_track['id']} in frame {i}")
 
             # Log info
             if i % (frame_count/10) == 0:

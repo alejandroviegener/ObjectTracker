@@ -14,7 +14,7 @@ logger.setLevel(logging.WARNING)
 stream_handler = logging.StreamHandler()
 
 # Default formatter
-formatter = logging.Formatter("%(name)s: %(levelname)s - %(message)s")
+formatter = logging.Formatter("%(name)s - %(levelname)s: %(message)s")
 
 # Add formatter to hadler
 stream_handler.setFormatter(formatter)

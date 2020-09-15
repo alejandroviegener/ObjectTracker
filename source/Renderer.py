@@ -81,6 +81,7 @@ class BoundingBoxRenderer:
 
         self._box_color = color
         self._box_line_width = line_width
+        logger.debug(f"Set box format, color: {color}, line width: {line_width}")
 
     def set_text_format(self, color, thickness, scale, font=cv.FONT_HERSHEY_SIMPLEX):
         """Set bounding box color and line width
@@ -102,6 +103,7 @@ class BoundingBoxRenderer:
         self._text_color = color
         self._text_thickness = thickness
         self._font_scale = scale
+        logger.debug(f"Set text format, color: {color}, thikness: {thickness}, scale: {scale}")
 
     def render(self, video_file, object_trackings, out_path = ".", file_name = "out"):
         """Render a video file with the bounding boxes specified in object trackings
@@ -113,16 +115,20 @@ class BoundingBoxRenderer:
         """
 
         if not path.exists(out_path):
+            logger.error("output path does not exist")
             raise ValueError("Output path does not exist")
         
         # Get video capture and first frame
-        first_frame, video_capture = utils.get_video_capture(video_file)
+        try:
+            first_frame, video_capture = utils.get_video_capture(video_file)
+        except Exception as e:
+            logger.error("invalid video file")
+            raise
         
         # Check that the object tracks are the same length of the video
         for obj in object_trackings:
             if utils.get_video_frame_count(video_capture) != len(obj["track"]):
-                print(len(obj["track"]))
-                print(utils.get_video_frame_count(video_capture))
+                logger.error("video frame count and object trackings must be equal")
                 raise ValueError("Video frame count and object trackings must be equal")
         
         # Create video writer
