@@ -55,7 +55,7 @@ To confirm the creation of the image, execute:
 docker image ls
 ```
 
-A docker image tagged "deepvision-tracker" must be listed
+A docker image named "deepvision-tracker" must be listed
 
 ## Usage <a name="usage"></a>
 
@@ -85,7 +85,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -a {KCF,MOSSE,CSRT}, --algorithm {KCF,MOSSE,CSRT}
-                        Tracking algorithm (default: KCF)
+                        Tracking algorithm (default: CSRT)
   -t TEXT_COLOR TEXT_COLOR TEXT_COLOR, --text_color TEXT_COLOR TEXT_COLOR TEXT_COLOR
                         Text color, BGR separated by space (default: [255, 255, 255])
   -b BOX_COLOR BOX_COLOR BOX_COLOR, --box_color BOX_COLOR BOX_COLOR BOX_COLOR
@@ -103,14 +103,14 @@ Typical usage:
 2) Execute the tracker application
 
 ```bash
-./tracker.sh input.mkv initial_conditions.json -a MOSSE -b 0 255 0 -t 255 255 255 -o output -v 3 --log
+./tracker.sh input.mkv initial_conditions.json -a CSRT -b 0 255 0 -t 255 255 255 -o output -v 3 --log
 ```
 
 **Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
 
 ## Tests <a name="tests"></a>
 
-To run the tests for the tracker package, execute the tracker scipt with the **--test** option:
+To run the tests for the tracker package, execute the tracker script with the **--test** option:
 
 ```bash
 ./tracker.sh --test
@@ -123,10 +123,10 @@ The following diagramm shows the basic design and flow of the application implem
 ![Application Workflow](./img/app-diagramm.jpg)
 
 
-1) An **input video** and an **initial condition** file defining the initial bounding boxes is passed to the application as parameters. Optional parameters are the bounding box color, the description text color, output file name, verbosity level and output logging file
-2) The **Object Tracker** module tracks the objects specified in the initial bounding boxes trough the input video frames. The tracker outputs a list of dictionaries that contains the tracking information for every object. This information inclues: the object id, the track status, and the bounding box coordinates.
-3) The objects tracking list and the input video are passed as input parameters to the **Bounding Box Renderer** module. The renderer generates a new video by combining the input video and the result of the tracker. The renderer also accepts as paramaters the bounding box and information text formatting.
-4) The application outputs the rendered output video with the bounding boxes and information text, and also outputs the log messages to console/file if configured.
+1) An **input video** and an **initial condition** file defining the initial bounding boxes is passed to the application as parameters. Optional parameters are the bounding box color, the description text color, output file name, verbosity level and output logging file. The input parameters are parsed using the **argparse** python lib. 
+2) The **Object Tracker** block tracks the objects specified in the initial bounding boxes trough the input video frames. The tracker outputs a list of dictionaries that contains the tracking information for every object. This information inclues: the object id, the track status, and the bounding box coordinates. The tracker is implemented in the **ObjectTracker** class in the **object_tracker** module of the **tracker** package. The tracker implements 3 different tracking algorithms, i.e., KCF, MOSSE and CSRT.
+3) The objects tracking list and the input video are passed as input parameters to the **Bounding Box Renderer** block. The renderer generates a new video by combining the input video and the result of the tracker. The renderer also accepts as paramaters the bounding box and information text formatting. The renderer is implemented in the **BoundingBoxRenderer** class in the **renderer** module of the **tracker** package.
+4) The application outputs the rendered output video with the bounding boxes and information text, and also outputs the log messages to console/file if configured. The console/file output logs are managed in the tracker package by the **logging** python lib. A hiererchal logging is implemented, a root logger for the package and child loggers for the different modules in the package. 
 
 
 ## Project Directory Structure <a name="structure"></a>
