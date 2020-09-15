@@ -3,7 +3,15 @@
 Application for multi object tracking, given initial bounding boxes.
 
 
-## Requirements
+# Table of Contents
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Usage](#usage)
+4. [Project Structure](#structure)
+5. [Application Design Basics](#design)
+
+
+## Requirements  <a name="requierements"></a>
 
 This application requieres the following for its installation and usage:
 
@@ -14,7 +22,7 @@ This application requieres the following for its installation and usage:
 [git]: https://git-scm.com/
 [docker]: https://www.docker.com/   
 
-## Installation
+## Installation <a name="installation"></a>
 
 Download the source repository to the desired location. From now on this directory will be refered to as $REPO_BASE_DIR: 
 
@@ -48,7 +56,7 @@ docker image ls
 
 A docker image tagged "deepvision-tracker" must be listed
 
-## Usage
+## Usage <a name="usage"></a>
 
 Change to the source directory in the repository:
 
@@ -89,12 +97,17 @@ optional arguments:
 
 Typical usage:
 
-1) Copy the input video and initial conditions to the in_out directory
+1) Copy the input video and initial conditions to the **in_out** directory
 
-2) Execute the tracker appication
+2) Execute the tracker application
 
 ```bash
 ./tracker.sh input.mkv initial_conditions.json -a MOSSE -b 0 255 0 -t 255 255 255 -o output -v 3 --log
 ```
 
 **Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
+
+## Project Structure <a name="structure"></a>
+
+## Application Design Basics <a name="design"></a>
+
