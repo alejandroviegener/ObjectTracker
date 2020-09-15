@@ -1,7 +1,7 @@
 """This class implements a video tracker for multiple objects
 
     Given a video file and initial bounding boxes, the class generates for every frame and every initial boundig box,
-    the corresponding tracking bounding box.
+    the corresponding tracking bounding box. 
 
     Example usage:
 
@@ -23,12 +23,20 @@ from TrackerType import TrackerType
 from  MultiTracker import MultiTracker
 import cv2 as cv
 import utils
+import logging
+import root_logger
+
+
+# Define logger for this module
+logger = logging.getLogger(root_logger.LOGGER_NAME + ".object_tracker")
+
 
 class ObjectTracker:
     """This class implements a video tracker for multiple objects"""
 
     def __init__(self, tracker_type = TrackerType.CSRT):
         self.tracker_type = tracker_type
+        logger.info(f"Object tracker {tracker_type.name} initialized")
 
     def track_objects(self, video_file, objects_to_track):
         """Tracks objects in a video file given the initial bounding boxes
@@ -82,6 +90,8 @@ class ObjectTracker:
 
         # Update tracking info for every frame in the video capture
         frame = first_frame
+        i = 0
+        frame_count = utils.get_video_frame_count(video_capture)
         while video_capture.isOpened():
 
             # Track  objects in new frame and update history
@@ -89,6 +99,11 @@ class ObjectTracker:
             for track_status, bounding_box, object_track in zip(track_status_list, bounding_boxes, object_trackings):
                 track_item ={"track_status": track_status, "coordinates": bounding_box}
                 object_track["track"].append(track_item)
+
+            # Log info
+            if i % (frame_count/10) == 0:
+                logger.info(f"tracking frame {i}/{frame_count}")
+            i = i + 1
 
             # Read new frame from video
             # If end of video, then break
@@ -121,6 +136,7 @@ class ObjectTracker:
             tracker.init(frame, bounding_box)
             multi_tracker.add(tracker)
         
+        logger.info(f"Multi tracker initialized for {len(initial_bounding_boxes)} objects")
         return multi_tracker
 
     @staticmethod

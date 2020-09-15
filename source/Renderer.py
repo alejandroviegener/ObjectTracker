@@ -18,6 +18,11 @@ from enum import Enum
 from os import path
 import utils
 import cv2 as cv
+import logging
+import root_logger
+
+# Define logger for this module
+logger = logging.getLogger(root_logger.LOGGER_NAME + ".bounding_box_render")
 
 class VideoCodec(Enum):
     """Available codecs"""
@@ -55,6 +60,9 @@ class BoundingBoxRenderer:
         self._text_thickness = 2
         self._font_scale = 0.75
         self._text_font = cv.FONT_HERSHEY_SIMPLEX
+
+        # Log data
+        logger.info(f"Renderer initialized")
 
     def set_box_format(self, color, line_width):
         """Set bounding box color and line width
@@ -156,6 +164,11 @@ class BoundingBoxRenderer:
                     point = (60, 50)
                     text = "Tracking failure: one or more objects could not be tracked"
                     cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
+
+            # Log info
+            if i % (frame_count/10) == 0:
+                logger.info(f"rendering frame {i}/{frame_count}")
+            i = i + 1
 
             # Write frame to output video
             video_writer.write(frame)
