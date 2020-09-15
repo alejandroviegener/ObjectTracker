@@ -16,7 +16,7 @@ This application requieres the following for its installation and usage:
 
 ## Installation
 
-Download the soource repository to the desired location. From now on this directory will be refered to as $REPO_BASE_DIR: 
+Download the source repository to the desired location. From now on this directory will be refered to as $REPO_BASE_DIR: 
 
 ```bash
 cd $REPO_BASE_DIR
@@ -25,20 +25,20 @@ git clone git@github.com:alejandroviegener/ObjectTracker.git
 
 The application is dockerized, to build the Docker image follow these steps:
 
-Change to the source directory in the repository and give permission to the installation script:
+1) Change to the source directory in the repository and give permission to the installation script:
 
 ```bash
 cd source
 chmod +x install.sh
 ```
 
-Execute the install script:
+2) Execute the install script:
 
 ```bash
 ./install.sh
 ```
 
-The script will create a docker image and an **inout** directory. This directory will be used as in and out entrypoint for the aplication. 
+The script will create a docker image and an **in_out** directory. This directory will be used as in and out entrypoint for the aplication. 
 
 To confirm the creation of the image, execute:
 
@@ -62,33 +62,35 @@ Give permissions to the application script:
 chmod +x tracker.sh
 ```
 
-Run the application:
+Run the application help:
 
 ```bash
 ./tracker.sh --help
+
+usage: tracker [-h] [-a {KCF,MOSSE,CSRT}] [-t TEXT_COLOR TEXT_COLOR TEXT_COLOR] [-b BOX_COLOR BOX_COLOR BOX_COLOR] [-o OUT_FILE_NAME] [-v {0,1,2,3}] [-l] video initial_conditions
+
+positional arguments:
+  video                 Input video file
+  initial_conditions    Initial conditions (json) file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a {KCF,MOSSE,CSRT}, --algorithm {KCF,MOSSE,CSRT}
+                        Tracking algorithm (default: KCF)
+  -t TEXT_COLOR TEXT_COLOR TEXT_COLOR, --text_color TEXT_COLOR TEXT_COLOR TEXT_COLOR
+                        Text color, BGR separated by space (default: [255, 255, 255])
+  -b BOX_COLOR BOX_COLOR BOX_COLOR, --box_color BOX_COLOR BOX_COLOR BOX_COLOR
+                        Box color, BGR separated by space (default: [0, 255, 0])
+  -o OUT_FILE_NAME, --out_file_name OUT_FILE_NAME
+  -v {0,1,2,3}, --verbosity {0,1,2,3}
+                        Set output verbosity (0- Error, 1 - Warning, 2 - Info, 3 - Debug) (default: 2)
+  -l, --log             Log to file (default: False)
 ```
 
 Typical usage:
 
 ```bash
-./tracker.sh input.mkv initial_conditions.json -v 1 -o output -l out.log
+./tracker.sh input.mkv initial_conditions.json -a MOSSE -b 0 255 0 -t 255 255 255 -o output -v 3 --log
 ```
 
-**Note**: The input video, the initial conditions file and the output of the application are managed trough the **inout** directory.
-
-
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
-```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+**Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
