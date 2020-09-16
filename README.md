@@ -26,12 +26,13 @@ This application requieres the following for its installation and usage:
 
 ## Installation <a name="installation"></a>
 
-Download the source repository to the desired location. From now on this directory will be refered to as $REPO_BASE_DIR: 
+Download the source repository to the desired location: 
 
 ```bash
-cd $REPO_BASE_DIR
 git clone git@github.com:alejandroviegener/ObjectTracker.git
 ```
+
+From now on this directory will be refered to as $REPO_BASE_DIR.
 
 The application is dockerized, to build the Docker image follow these steps:
 
@@ -60,7 +61,7 @@ A docker image named "deepvision-tracker" must be listed
 
 ## Usage <a name="usage"></a>
 
-Change to the source directory in the repository:
+Go to the source directory in the repository:
 
 ```bash
 cd $REPO_BASE_DIR/source
