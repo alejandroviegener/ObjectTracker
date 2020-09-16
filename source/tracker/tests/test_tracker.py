@@ -38,11 +38,10 @@ def test_tracking(tracker):
     objects_to_track_file = "tests/data/initial_conditions.json"
     objects_to_track = utils.read_objects_to_track_file(objects_to_track_file)
 
-    # Note: this evaluation method should be (probably) changed,
+    # Note: this evaluation method should be changed,
     #   An evaluation method using a metric, as for example the Jaccard Index, could be used
     #   instead if checking that the exact bounding boxes are matched. A particular bounding box can 
     #   be validated if the JI is above a certain threshold. Then a performance metric could me used (for example, accuracy or f-score)
-    #
     
     # Read trackings for each object
     with open("tests/data/input_trackings.json") as f:

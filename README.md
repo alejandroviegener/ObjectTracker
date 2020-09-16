@@ -1,6 +1,7 @@
 # Object Tracker
 
-Application for multi object tracking, given initial bounding boxes.
+Application for multi object tracking, given initial bounding boxes. The application receives a video and the initial bounding boxes as input and generates an output video with the object trackings.
+**OpenCV** is used as source for the tracking algorithms and frame editions.
 
 
 # Table of Contents
@@ -103,7 +104,7 @@ Typical usage:
 2) Execute the tracker application
 
 ```bash
-./tracker.sh input.mkv initial_conditions.json -a CSRT -b 0 255 0 -t 255 255 255 -o output -v 3 --log
+./tracker.sh input.mkv initial_conditions.json -a CSRT -b 0 255 0 -t 255 255 255 -o out_file_name -v 2 --log
 ```
 
 **Note**: The input video file, the initial conditions file and the output of the application, i.e. video and log file, are managed trough the **in_out** directory.
@@ -123,10 +124,10 @@ The following diagramm shows the basic design and flow of the application implem
 ![Application Workflow](./img/app-diagramm.jpg)
 
 
-1) An **input video** and an **initial condition** file defining the initial bounding boxes is passed to the application as parameters. Optional parameters are the bounding box color, the description text color, output file name, verbosity level and output logging file. The input parameters are parsed using the **argparse** python lib. 
-2) The **Object Tracker** block tracks the objects specified in the initial bounding boxes trough the input video frames. The tracker outputs a list of dictionaries that contains the tracking information for every object. This information inclues: the object id, the track status, and the bounding box coordinates. The tracker is implemented in the **ObjectTracker** class in the **object_tracker** module of the **tracker** package. The tracker implements 3 different tracking algorithms, i.e., KCF, MOSSE and CSRT. The library **OpenCV** was used.
-3) The objects tracking list and the input video are passed as input parameters to the **Bounding Box Renderer** block. The renderer generates a new video by combining the input video and the result of the tracker. The renderer also accepts as paramaters the bounding box and information text formatting. The renderer is implemented in the **BoundingBoxRenderer** class in the **renderer** module of the **tracker** package. The library **OpenCV** was used.
-4) The application outputs the rendered output video with the bounding boxes and information text, and also outputs the log messages to console/file if configured. The console/file output logs are managed in the tracker package by the **logging** python lib. A hiererchal logging is implemented, a root logger for the package and child loggers for the different modules in the package. 
+1) An **input video** and an **initial condition** file defining the initial bounding boxes is passed to the application as parameters. Optional parameters are the bounding box color, the description text color, output file name, verbosity level and output logging enabled/disabled. The input parameters are parsed using the **argparse** python lib. 
+2) The **Object Tracker** block tracks the objects specified in the initial bounding boxes trough the input video frames. The tracker outputs a list of dictionaries that contains the tracking information for every object. This information inclues: the object id, the track status, and the bounding box coordinates. The tracker is implemented in the **ObjectTracker** class in the **object_tracker** module of the **tracker** package. The tracker enables to use 3 different tracking algorithms, i.e., KCF, MOSSE and CSRT. The library **OpenCV** was used. In particular, for the input video given in this challenge, CSRT performs best but is also the slowest algorithm. MOSSE and KCF are faster but loose the tracking in some frames of the video.
+3) The objects tracking list and the input video are passed as input parameters to the **Bounding Box Renderer** block. The renderer generates a new video by combining the input video and the result of the tracker. The renderer also accepts as paramaters the bounding box and text formatting options. The renderer is implemented in the **BoundingBoxRenderer** class in the **renderer** module of the **tracker** package. The library **OpenCV** was used.
+4) The application outputs the rendered output video with the bounding boxes and information text, and also outputs the log messages to console and file if enabled. The console/file output logs are managed in the tracker package by the **logging** python lib. A hiererchal logging is implemented, a root logger for the package, and child loggers for the different modules in the package. 
 
 
 ## Project Directory Structure <a name="structure"></a>
@@ -141,7 +142,7 @@ ObjectTracker
     │   └── input.mkv
     ├── documents: dir containing project documentation
     │   └── Challenge Computer Vision & Python Engineer - Deep Vision AI.pdf
-    ├── research: dir containing notebooks and scripts of the research stage of the project
+    ├── research: dir containing notebooks and scripts generated in the initial research stage of the project
     │   ├── notebooks
     │   │   └── 01_opencv-basics.ipynb
     │   └── scripts
@@ -149,7 +150,7 @@ ObjectTracker
     │       └── 02_opencv-multi-tracker-test.py
     └── source: dir containing the application and packages source code
         ├── Dockerfile: docker file for the application
-        ├── install.sh: script to install the the application
+        ├── install.sh: script to install the application
         ├── requirements.txt: python requirements file
         ├── test.sh: script to execute the module tests
         ├── tracker: tracker package
