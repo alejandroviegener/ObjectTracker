@@ -101,9 +101,12 @@ if __name__ == "__main__":
     
     # Create tracker from initial conditions, bbox renderer and in/out video streams
     logger.info("Initializing system...")
+    
     tracker = ObjectTracker(tracker_type)
     tracker.set_objects_to_track(initial_bounding_boxes)
+   
     renderer = BoundingBoxRenderer()
+   
     in_stream = FileInVideoStream(video_file)
     out_stream = FileOutVideoStream(out_file_name, in_stream.width(), in_stream.height(), in_stream.fps(), in_out_path)
 
@@ -124,7 +127,7 @@ if __name__ == "__main__":
         if i % (frame_count/10) == 0:
             logger.info(f"rendering frame {i}/{frame_count}")
 
-        # Show image, exit if ESC pressed
+        # Show image only in Debug, exit if ESC key pressed
         if verbosity >= 3:
             cv.imshow("Tracking", frame)
             k = cv.waitKey(1) & 0xff
