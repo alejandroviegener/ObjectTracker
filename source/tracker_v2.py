@@ -26,7 +26,7 @@ Example:
 
 """
 
-from tracker.video_stream import FileInVideoStream
+from tracker.video_stream import FileInVideoStream, FileOutVideoStream
 from tracker.object_tracker import ObjectTracker
 from tracker.types import TrackerType
 from tracker.renderer import  BoundingBoxRenderer 
@@ -94,46 +94,38 @@ if __name__ == "__main__":
     if log_to_file:
         root_logger.add_file_handler(log_file)
 
-    # Create input stream video
-    in_stream = FileInVideoStream(video_file)
-
-    # Log
-    logger.info("1/3 Reading initial conditions file and configuring tracker")
-
     # Read initial conditions file
+    logger.info("Reading initial conditions file and configuring tracker")
     objects_to_track = utils.read_objects_to_track_file(objects_to_track_file)
-
-    # Create tracker from initial conditions
-    tracker = ObjectTracker(tracker_type)
-    
-    # Set initial bounding boxes in tracker
     initial_bounding_boxes = [obj["coordinates"] for obj in objects_to_track]
+    
+    # Create tracker from initial conditions, bbox renderer and in/out video streams
+    logger.info("Initializing system...")
+    tracker = ObjectTracker(tracker_type)
     tracker.set_objects_to_track(initial_bounding_boxes)
-
-    # Create bbox renderer
     renderer = BoundingBoxRenderer()
-
-    # Log
-    logger.info("2/3 Iterate over frames")
+    in_stream = FileInVideoStream(video_file)
+    out_stream = FileOutVideoStream(out_file_name, in_stream.width(), in_stream.height(), in_stream.fps(), in_out_path)
 
     # Iterate over input video stream and render video
+    logger.info("Iterate over video frames")
+    frame_count = len(in_stream)
     for i, frame in in_stream:
         
         # Track opjects
         status_list, bboxes = tracker.update(frame)
         
-        # Add bboxes to frame 
-        renderer.render_frame(frame, bboxes, status_list)
+        # Add bounding boxes to frame 
+        renderer.frame_update(frame, bboxes, status_list)
+
+        # Out stream to file 
+        out_stream.write(frame)
+
+        if i % (frame_count/10) == 0:
+            logger.info(f"rendering frame {i}/{frame_count}")
 
         # Show image, exit if ESC pressed
-        cv.imshow("Tracking", frame)
-        k = cv.waitKey(1) & 0xff
-        if k == 27 : break
-
-
-    # Render video
-    #logger.info("3/3 Rendering output video")
-    #renderer = BoundingBoxRenderer()
-    #renderer.set_box_format(box_color, 2)
-    #renderer.set_text_format(text_color, 2, 0.8)
-    #renderer.render(video_file, object_trackings, out_path=in_out_path, file_name=out_file_name)
+        if verbosity >= 3:
+            cv.imshow("Tracking", frame)
+            k = cv.waitKey(1) & 0xff
+            if k == 27 : break

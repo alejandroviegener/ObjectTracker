@@ -1,5 +1,6 @@
 
 import cv2 as cv
+import platform
 import logging
 from tracker.types import VideoCodec, VideoFormat
 from tracker import root_logger
@@ -28,21 +29,21 @@ class FileInVideoStream:
             i = i + 1
 
     def __len__(self):
-        return self.get_video_frame_count()
+        return self.frame_count()
 
-    def get_video_fps(self):
+    def fps(self):
         """Get video frame per seconds"""
         return int(self.video_capture.get(cv.CAP_PROP_FPS))
 
-    def get_video_frame_width(self):
+    def width(self):
         """Get video frame width"""
         return int(self.video_capture.get(cv.CAP_PROP_FRAME_WIDTH))
 
-    def get_video_frame_height(self):
+    def height(self):
         """Get video frame height"""
         return int(self.video_capture.get(cv.CAP_PROP_FRAME_HEIGHT))
 
-    def get_video_frame_count(self):
+    def frame_count(self):
         """Get video frame count"""
         return int(self.video_capture.get(cv.CAP_PROP_FRAME_COUNT))
 
@@ -69,14 +70,14 @@ class FileOutVideoStream():
         # Create video writer
         self.video_writer = cv.VideoWriter(  out_path + "/" + file_name + "." + self.video_format.value,
                                              cv.VideoWriter_fourcc(*self.video_codec.value), 
-                                             fps, 
-                                             (width, height)
+                                             int(fps), 
+                                             (int(width), int(height))
                                           )
 
         # Log data
         logger.info(f"File out video stream initialized")
     
-    def save(self, frame):
+    def write(self, frame):
         # Write frame to output video
         self.video_writer.write(frame)
 

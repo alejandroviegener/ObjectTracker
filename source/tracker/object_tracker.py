@@ -26,7 +26,6 @@ from tracker import utils
 import logging
 from tracker import root_logger
 
-
 # Define logger for this module
 logger = logging.getLogger(root_logger.LOGGER_NAME + ".object_tracker")
 
@@ -40,7 +39,6 @@ class ObjectTracker:
         self.frame_index = 0
         self.tracker = None
         logger.info(f"Object tracker {tracker_type.name} initialized")
-
 
     def set_objects_to_track(self, bounding_boxes):
         self.bounding_boxes = bounding_boxes
@@ -57,94 +55,6 @@ class ObjectTracker:
             self.frame_index += 1
             return self.tracker.update(frame)
 
-    def track_objects(self, video_file, objects_to_track):
-        """Tracks objects in a video file given the initial bounding boxes
-
-        Args:
-            video_file: video file 
-            objects_info: list of dictionaries that define the objects to track. Each element of the list must have
-                the following structure:
-                        
-                    {
-                        "object": (string) description of the object to track,
-                        "id": (int) id of the object to track
-                        "coordinates": (tuple) coordinates of the initial bounding box (x, y, width, height)
-                    }
-
-        Returns:
-            A list containing the object trackings. Each element of the list is
-            a dictionary with the following structure:
-
-                {
-                    "object": (string) object description as defined in the "object_to_track" input parameter,
-                    "id": (int) object id as defined in the "object_to_track" input parameter,
-                    "track": list of dicts containing the info of the track result for each frame. See structure below. 
-                }
-
-                Each element of the track list has the following structure:
-                   
-                    {
-                       "track_status": the track status, True if tracked ok, False if track lost
-                       "coordinates": tuple defining the bounding box, (x, y, witdh, height)
-                    } 
-
-        Raises:
-            ValueError: if video file can not be opened
-            ValueError: if no frame can be read from the video
-            
-        """
-
-        # Create a video capture object to read videos 
-        try:
-            first_frame, video_capture = utils.get_video_capture(video_file)
-        except ValueError:
-            logger.error("invalid video file")
-            raise
-
-        # Initialize tracker with every object to track
-        initial_bounding_boxes = [obj["coordinates"] for obj in objects_to_track]
-        tracker = self._initialize_tracker(initial_bounding_boxes, first_frame)
-
-        # Create object_trackings structure to be returned
-        object_trackings = []
-        for obj in objects_to_track:
-            object_track = {"object": obj["object"], "id": obj["id"], "track": []}
-            object_trackings.append(object_track)
-
-        # Update tracking info for every frame in the video capture
-        frame = first_frame
-        i = 0
-        frame_count = utils.get_video_frame_count(video_capture)
-        while video_capture.isOpened():
-
-            # Track  objects in new frame and update history
-            track_status_list, bounding_boxes = tracker.update(frame)
-            for track_status, bounding_box, object_track in zip(track_status_list, bounding_boxes, object_trackings):
-                track_item ={"track_status": track_status, "coordinates": bounding_box}
-                object_track["track"].append(track_item)
-
-                # Log if object not tracked
-                if track_status == False:
-                    logger.warning(f"Tracking error for object {object_track['id']} in frame {i}")
-
-            # Log info
-            if i % (frame_count/10) == 0:
-                logger.info(f"tracking frame {i}/{frame_count}")
-            i = i + 1
-
-            # Read new frame from video
-            # If end of video, then break
-            read_ok, frame = video_capture.read()
-            if not read_ok:
-                break
-
-        # Release the capture
-        video_capture.release()
-
-        # Return the object trackings
-        return object_trackings
-
-        
     def _initialize_tracker(self, initial_bounding_boxes, frame):
         """Returns a multitracker object
         
@@ -165,6 +75,7 @@ class ObjectTracker:
         
         logger.info(f"Multi tracker initialized for {len(initial_bounding_boxes)} objects")
         return multi_tracker
+
 
     @staticmethod
     def _create_tracker_by_type(tracker_type):

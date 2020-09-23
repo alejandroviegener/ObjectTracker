@@ -44,9 +44,9 @@ class BoundingBoxRenderer:
             self.video_codec = VideoCodec.DIVX
             self.video_format = VideoFormat.AVI
         
-        self._box_color = (0, 0, 255)
+        self._box_color = (0, 255, 255)
         self._box_line_width = 5
-        self._text_color = (0, 0, 255)
+        self._text_color = (255, 255, 255)
         self._text_thickness = 2
         self._font_scale = 0.75
         self._text_font = cv.FONT_HERSHEY_SIMPLEX
@@ -96,9 +96,14 @@ class BoundingBoxRenderer:
         logger.debug(f"Set text format, color: {color}, thikness: {thickness}, scale: {scale}")
 
 
-    def render_frame(self, frame, boxes, track_status):
+    def frame_update(self, frame, boxes, track_status, object_ids = None):
+        
+        # Create object ids if not defined
+        if object_ids is None:
+            object_ids = range(len(boxes))
+       
         # Loop over boxes and statuses 
-        for status, coordinates, i in zip(track_status, boxes, range(len(boxes))):                
+        for status, coordinates, obj_id in zip(track_status, boxes, object_ids):                
             if status:
 
                 # Add rectangle over object
@@ -109,7 +114,7 @@ class BoundingBoxRenderer:
                 # Add text for object
                 # Text is shown UNDER the bbox unless it goes out of the video frame
                 # In that case it is shown OVER the bbox
-                text ="object" + "_" + str(i)
+                text = "object" + "_" + str(obj_id)
                 x = coordinates[0]
                 y_under = coordinates[1] + coordinates[3] + 30
                 y_over = coordinates[1] - 20
@@ -120,84 +125,6 @@ class BoundingBoxRenderer:
                 point = (60, 50)
                 text = "Tracking failure: one or more objects could not be tracked"
                 cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
-
-
-    def render_video(self, video_file, object_trackings, out_path = ".", file_name = "out"):
-        """Render a video file with the bounding boxes specified in object trackings
-        
-        Raises:
-            ValueError: if video file can not be opened
-            ValueError: if no frame can be read from the video
-            ValueError: if video frame count not equal to object_trackings length
-        """
-
-        if not path.exists(out_path):
-            logger.error("output path does not exist")
-            raise ValueError("Output path does not exist")
-        
-        # Get video capture and first frame
-        try:
-            first_frame, video_capture = utils.get_video_capture(video_file)
-        except Exception as e:
-            logger.error("invalid video file")
-            raise
-        
-        # Check that the object tracks are the same length of the video
-        for obj in object_trackings:
-            if utils.get_video_frame_count(video_capture) != len(obj["track"]):
-                logger.error("video frame count and object trackings must be equal")
-                raise ValueError("Video frame count and object trackings must be equal")
-        
-        # Create video writer
-        video_writer = cv.VideoWriter(  out_path + "/" + file_name + "." + self.video_format.value,
-                                        cv.VideoWriter_fourcc(*self.video_codec.value), 
-                                        utils.get_video_fps(video_capture), 
-                                        (utils.get_video_frame_width(video_capture), utils.get_video_frame_height(video_capture))
-                                     )
-        
-        # Add the object bounding boxes and text to every frame in the video
-        frame_count = utils.get_video_frame_count(video_capture)
-        frame_width = utils.get_video_frame_width(video_capture)
-        frame_height = utils.get_video_frame_height(video_capture)
-        frame = first_frame
-        for i in range(frame_count):
-
-            # Loop over tracked objects 
-            for obj in object_trackings:                
-                coordinates = obj["track"][i]["coordinates"]
-                track_status = obj["track"][i]["track_status"]
-                if track_status:
-
-                    # Add rectangle over object
-                    point1 = (coordinates[0], coordinates[1])
-                    point2 = (coordinates[0] + coordinates[2], coordinates[1] + coordinates[3])
-                    cv.rectangle(frame, point1, point2, self._box_color, self._box_line_width)
-
-                    # Add text for object
-                    # Text is shown UNDER the bbox unless it goes out of the video frame
-                    # In that case it is shown OVER the bbox
-                    text = obj["object"] + "_" + str(obj["id"])
-                    x = coordinates[0]
-                    y_under = coordinates[1] + coordinates[3] + 30
-                    y_over = coordinates[1] - 20
-                    point = (x, y_over) if y_under >= frame_height else (x, y_under)
-                    cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
-                else:
-                    # Indicate a tracking error ocurred
-                    point = (60, 50)
-                    text = "Tracking failure: one or more objects could not be tracked"
-                    cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
-
-            # Log info
-            if i % (frame_count/10) == 0:
-                logger.info(f"rendering frame {i}/{frame_count}")
-            i = i + 1
-
-            # Write frame to output video
-            video_writer.write(frame)
-
-            # Read new frame 
-            success, frame = video_capture.read()
 
 
 #######################################################################
