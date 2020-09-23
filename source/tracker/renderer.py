@@ -95,7 +95,34 @@ class BoundingBoxRenderer:
         self._font_scale = scale
         logger.debug(f"Set text format, color: {color}, thikness: {thickness}, scale: {scale}")
 
-    def render(self, video_file, object_trackings, out_path = ".", file_name = "out"):
+
+    def render_frame(self, frame, boxes, track_status):
+        # Loop over boxes and statuses 
+        for status, coordinates, i in zip(track_status, boxes, range(len(boxes))):                
+            if status:
+
+                # Add rectangle over object
+                point1 = (coordinates[0], coordinates[1])
+                point2 = (coordinates[0] + coordinates[2], coordinates[1] + coordinates[3])
+                cv.rectangle(frame, point1, point2, self._box_color, self._box_line_width)
+
+                # Add text for object
+                # Text is shown UNDER the bbox unless it goes out of the video frame
+                # In that case it is shown OVER the bbox
+                text ="object" + "_" + str(i)
+                x = coordinates[0]
+                y_under = coordinates[1] + coordinates[3] + 30
+                y_over = coordinates[1] - 20
+                point = (x, y_over) if y_under >= frame.shape[0] else (x, y_under)
+                cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
+            else:
+                # Indicate a tracking error ocurred
+                point = (60, 50)
+                text = "Tracking failure: one or more objects could not be tracked"
+                cv.putText(frame, text, point, self._text_font, self._font_scale, self._text_color, self._text_thickness)
+
+
+    def render_video(self, video_file, object_trackings, out_path = ".", file_name = "out"):
         """Render a video file with the bounding boxes specified in object trackings
         
         Raises:

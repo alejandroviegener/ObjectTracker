@@ -36,7 +36,26 @@ class ObjectTracker:
 
     def __init__(self, tracker_type = TrackerType.CSRT):
         self.tracker_type = tracker_type
+        self.bounding_boxes = None
+        self.frame_index = 0
+        self.tracker = None
         logger.info(f"Object tracker {tracker_type.name} initialized")
+
+
+    def set_objects_to_track(self, bounding_boxes):
+        self.bounding_boxes = bounding_boxes
+
+    def reset(self):
+        self.frame_index = 0
+
+    def update(self, frame):
+        if self.frame_index == 0:
+            self.tracker = self._initialize_tracker(self.bounding_boxes, frame)
+            self.frame_index += 1
+            return ( [True] * len(self.bounding_boxes), self.bounding_boxes)
+        else:
+            self.frame_index += 1
+            return self.tracker.update(frame)
 
     def track_objects(self, video_file, objects_to_track):
         """Tracks objects in a video file given the initial bounding boxes
