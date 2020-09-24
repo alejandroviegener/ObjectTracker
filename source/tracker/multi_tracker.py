@@ -16,31 +16,76 @@
             track_status_list, bbox_list = multi_tracker.update(frame)
 """
 
-from concurrent.futures import ThreadPoolExecutor as PoolEcecutor
+
+import multiprocessing as mp
+import time
+import cv2 as cv
 
 class MultiTracker:
     """Collection of single object trackers"""
 
+    processes = []
+    input_queues = []
+    output_queues = []
+    processes_started = False
+
     def __init__(self):
-        """Initialize an empty list of trackers"""
-        self.trackers = []
+        pass
 
-    def add(self, tracker):
-        """Add tracker to trackers list"""
-        self.trackers.append(tracker)
-    
     @staticmethod
-    def _track(parameters):
-        """Used to multiprocess"""
-        self = parameters[0]
-        i = parameters[1]
-        tracker = self.trackers[i]
-        frame = parameters[2]
-        track_status, bounding_box = tracker.update(frame)
-        bounding_box = tuple([int(i) for i in bounding_box])
-        return (track_status, bounding_box)
+    def add(tracker_type, frame, bounding_box):
+        """Add tracker to trackers list"""
 
-    def update(self, frame, optimize = False):
+        # Create queues and process
+        input_queue = mp.Queue()
+        output_queue = mp.Queue()
+        process = mp.Process(target=MultiTracker._track, args=(tracker_type, frame, bounding_box, input_queue, output_queue))
+        
+        # Store queus and processes instances
+        MultiTracker.input_queues.append(input_queue)
+        MultiTracker.output_queues.append(output_queue)
+        MultiTracker.processes.append(process)
+
+    @staticmethod
+    def start():
+        """Start all tracker processes"""
+        if MultiTracker.processes_started:
+            return
+
+        for process in MultiTracker.processes :
+            process.start()                  
+        MultiTracker.processes_started = True
+
+    @staticmethod
+    def stop():
+        if not MultiTracker.processes_started:
+            return 
+
+        for process in MultiTracker.processes:
+            process.join()
+        MultiTracker.processes_started = False
+
+    @staticmethod
+    def _track(tracker_type, frame, bounding_box, input_queue, output_queue):
+        """Used to multiprocess"""
+    
+        tracker = cv.TrackerCSRT_create()
+        tracker.init(frame, bounding_box)
+        while True:
+            new_frame = input_queue.get(True)
+            track_status, bounding_box = tracker.update(new_frame)
+            
+            bounding_box = tuple([int(i) for i in bounding_box])
+            result = (track_status,bounding_box)
+            
+            output_queue.put(result, True)
+        
+        #track_status, bounding_box = tracker.update(frame)
+        #bounding_box = tuple([int(i) for i in bounding_box])
+        #return (track_status, bounding_box)
+
+    @staticmethod
+    def update(frame, optimize = True):
         """Update multitracker
         
         Args:
@@ -48,33 +93,37 @@ class MultiTracker:
         """
 
         if optimize:
-            return self.update_optimized(frame)
+            return MultiTracker.update_optimized(frame)
         else:
-            return self.update_not_optimized(frame)
+            return MultiTracker.update_not_optimized(frame)
 
-    def update_optimized(self, frame):
+
+    @staticmethod
+    def update_optimized(frame):
         """Update each of the trackers in the list (multi process optimized)
         
         Returns:
             A list containing the track status and the bbox for each tracker
         """
 
+        MultiTracker.start()
+
         # Create empty lists of track status and bounding boxes        
         track_status_list = []
         bounding_boxes = []
 
-        # Launch each tracker in a separate process
-        with PoolEcecutor(max_workers=len(self.trackers)) as executor:    
-            parameters = [(self, i, frame) for i in range(len(self.trackers))]
-            result = executor.map(self._track, parameters)
-            
-            for status, bbox in result:
-                track_status_list.append(status)
-                bounding_boxes.append(bbox)
+        for queue in MultiTracker.input_queues:
+            queue.put(frame)
+
+        for queue in MultiTracker.output_queues:
+            status, bbox = queue.get(True)
+            track_status_list.append(status)
+            bounding_boxes.append(bbox)
 
         return (track_status_list, bounding_boxes)
 
-    def update_not_optimized(self, frame):
+
+    def update_not_optimized(frame):
         """Update each of the trackers in the list (not optimized)
         
         Returns:
@@ -86,7 +135,7 @@ class MultiTracker:
         bounding_boxes = []
 
         # Update each tracker in the multi trackers list
-        for tracker in self.trackers:
+        for tracker in MultiTracker.trackers:
             track_status, bounding_box = tracker.update(frame)
             bounding_box = tuple([int(i) for i in bounding_box])
             track_status_list.append(track_status)

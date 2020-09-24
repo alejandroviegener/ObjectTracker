@@ -67,11 +67,8 @@ class ObjectTracker:
         """
         
         multi_tracker = MultiTracker()
-        
         for bounding_box in initial_bounding_boxes:
-            tracker = self._create_tracker_by_type(self.tracker_type)
-            tracker.init(frame, bounding_box)
-            multi_tracker.add(tracker)
+            multi_tracker.add(self.tracker_type, frame, bounding_box)
         
         logger.info(f"Multi tracker initialized for {len(initial_bounding_boxes)} objects")
         return multi_tracker
@@ -97,7 +94,7 @@ class ObjectTracker:
 #######################################################################
 ####################### Usage Example #################################
 #######################################################################
-if __name__ == "__main__":
+if __name__ == "__main_______":
     
     video_file = "../data/input.mkv"
     objects_to_track_file = "../data/initial_conditions.json"
